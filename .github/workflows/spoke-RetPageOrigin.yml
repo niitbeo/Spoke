@@ -1,15 +1,24 @@
-name: spoke
+name: Node.js CI
+
 on:
   push:
-    branches:
-    paths-ignore: ["README.md"]
-  workflow_dispatch:
+    branches: [master]
+  pull_request:
+    branches: [master]
 
 jobs:
-  turkeyGitops:
-    uses: mozilla/hubs-ops/.github/workflows/turkeyGitops.yml@master
-    with:
-      registry: mozillareality
-      dockerfile: RetPageOriginDockerfile
-    secrets:
-      DOCKER_HUB_PWD: ${{ secrets.DOCKER_HUB_PWD }}
+  build:
+    runs-on: self-hosted
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install deps
+        run: yarn install
+
+      - name: Build
+        run: yarn build
